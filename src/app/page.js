@@ -1,95 +1,128 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+'use client'
+import { useState,useEffect } from 'react';
+import "./globals.css";
+function App() {
+  const [userData, setUserData] = useState([]);
+  const [question, setQuestion] = useState(1);
+  const [useButton, setUseButton] = useState(true);
+  const [table, setTable] = useState(false);
 
-export default function Home() {
+  const [answerA, setAnswerA] = useState(0);
+  const [answerB, setAnswerB] = useState(0);
+  const [answerC, setAnswerC] = useState(0);
+  const [answerD, setAnswerD] = useState(0);
+  const handleClickA = () => {
+    setAnswerA((prev) => prev + 1);
+    setUseButton(true);
+  };
+  const handleClickB = () => {
+    setAnswerB((prev) => prev + 1);
+    setUseButton(true);
+  };
+  const handleClickC = () => {
+    setAnswerC((prev) => prev + 1);
+    setUseButton(true);
+  };
+  const handleClickD = () => {
+    setAnswerD((prev) => prev + 1);
+    setUseButton(true);
+  };
+
+  const url = "https://jsonplaceholder.typicode.com/posts";
+  useEffect(() => {
+    fetch(url)
+      .then((res) => res.json())
+      .then((data) => {
+        setUserData(data.filter((dat) => dat.id === question));
+
+        let timerId;
+        timerId = setTimeout(() => {
+          setUseButton(true);
+          if (question < 10) setQuestion(question+ 1);
+          if (question === 10) {
+            setTable(true);
+          }
+        }, 30000);
+        let qeustionTime;
+        qeustionTime = setTimeout(() => {
+          setUseButton(false);
+        }, 10000);
+
+        return () => {
+          clearTimeout(timerId);
+        };
+      });
+  }, [question]);
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div>
+      <h3 className="header">Question :{question}</h3>
+      {userData.map((user) => (
+        <ul key={user.id}>
+          <li className="ul">{user.title}?</li>
+          A:
+          <button
+            className="button"
+            disabled={useButton}
+            onClick={handleClickA}
           >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
+            No
+          </button>
+          B:
+          <button
+            className="button"
+            disabled={useButton}
+            onClick={handleClickB}
+          >
+            Sometimes
+          </button>
+          C:
+          <button
+            className="button"
+            disabled={useButton}
+            onClick={handleClickC}
+          >
+            Mostly Yes
+          </button>
+          D:
+          <button
+            className="button"
+            disabled={useButton}
+            onClick={handleClickD}
+          >
+            Yes
+          </button>
+        </ul>
+      ))}
+      <div>
+        {table ? (
+          <div>
+            Test Bitti Sonuçlar:
+            <table >
+              <thead >
+                <tr >
+                  <th></th>
+                  <th className="rightborder">Option A</th>
+                  <th className="rightborder">Option B</th>
+                  <th className="rightborder"> Option C</th>
+                  <th className="rightborder">Option D</th>
+                </tr>
+              </thead>
+              <tbody className="thead">
+                <tr>
+                  <td ></td>
+                  <td className="borderline">{answerA}</td>
+                  <td className="borderline">{answerB}</td>
+                  <td className="borderline">{answerC}</td>
+                  <td className="borderline">{answerD}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        ) : null}
       </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  );
+    </div>
+  ); 
 }
+
+export default App;
